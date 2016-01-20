@@ -1,0 +1,24 @@
+TFile * f = TFile::Open("scalefactor_j1pt.root");
+TGraphAsymmErrors *g = (TGraphAsymmErrors*)f->Get("ScaleFactor");
+TF1 *ff = new TF1("ff","pol0");
+g->Fit("ff");
+TGraphErrors *grint = new TGraphErrors(4);
+for (i=0; i<4; i++){ grint->SetPoint(i, g->GetX()[i], 0);(TVirtualFitter::GetFitter())->GetConfidenceIntervals(grint);}
+grint->SetFillColor(kRed);
+grint->SetFillStyle(3018);
+grint->GetYaxis()->SetRangeUser(0.0,1.15);
+grint->GetXaxis()->SetRangeUser(0.,900.);
+TCanvas * c1 = new TCanvas("c1","c1");
+c1->cd();
+gStyle->SetOptStat(1111111);
+gStyle->SetStatY(0.5); 
+gStyle->SetStatX(0.5);
+grint->Draw("a3");
+c1->SetGridx();
+c1->SetGridy();
+g->Draw("same");
+TFile out_file("scalefactor_fit.root", "RECREATE");
+ff.Write();
+out_file.Close();
+//TF1 *ff = new TF1("ff",Erf_twosteps,250,1000,7);
+//ff->SetParameters(1.,0.05,0.2,400.,0.05,0.1,800.);
